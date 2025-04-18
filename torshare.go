@@ -23,15 +23,13 @@ func main() {
 	timeoutString := os.Args[2]
 	compressionLevelString := os.Args[3]
 	if source == "" || timeoutString == "" || compressionLevelString == "" {
-		log.Fatalln("Usage:\ntorshare [filename] [duration] [compression level (0-10)]")
+		log.Fatalln("Usage:\ntorshare [filename] [timeout] [compression (0-10)]")
 	}
 
-	// check if user has tor and ffmpeg installed
+	// check if user has tor installed
+	// ffmpeg check is in compressMP4
 	if _, err := exec.LookPath("tor"); err != nil {
 		fmt.Println("`tor` not found in PATH: %w", err)
-	}
-	if _, err := exec.LookPath("ffmpeg"); err != nil {
-		fmt.Println("`ffmpeg` not found in PATH: %w", err)
 	}
 
 	// check if source exists

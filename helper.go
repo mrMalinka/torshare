@@ -42,6 +42,10 @@ func compressMP4(inputPath, outputPath string, level int) error {
 		// simply hard link the file if no compression is needed
 		return os.Link(inputPath, outputPath)
 	} else {
+		if _, err := exec.LookPath("ffmpeg"); err != nil {
+			fmt.Println("ffmpeg needs to be installed to use compression!\nerr:", err)
+			os.Exit(1)
+		}
 		crf := 18 + int(math.Round(float64(level-1)*3.6667))
 		cmd := exec.Command(
 			"ffmpeg",

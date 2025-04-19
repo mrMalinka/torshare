@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -23,29 +22,38 @@ func main() {
 	timeoutString := os.Args[2]
 	compressionLevelString := os.Args[3]
 	if source == "" || timeoutString == "" || compressionLevelString == "" {
-		log.Fatalln("Usage:\ntorshare [filename] [timeout] [compression (0-10)]")
+		fmt.Println("Usage:\ntorshare [filename] [timeout] [compression (0-10)]")
+		os.Exit(1)
 	}
 
 	// check if user has tor installed
 	// ffmpeg check is in compressMP4
 	if _, err := exec.LookPath("tor"); err != nil {
 		fmt.Println("`tor` not found in PATH: %w", err)
+		os.Exit(1)
 	}
 
 	// check if source exists
 	if _, err := os.Stat(source); errors.Is(err, os.ErrNotExist) {
-		log.Fatalf("File '%v' does not exist.\n", source)
+		fmt.Printf("File '%v' does not exist.\n", source)
+		os.Exit(1)
+	}
+	if filepath.Ext(source) != "mp4" {
+		fmt.Println("File is not an mp4.")
+		os.Exit(1)
 	}
 
 	// parse timeout
 	timeout, err := time.ParseDuration(timeoutString)
 	if err != nil {
-		log.Fatalln("Failed to parse timeout duration:", err)
+		fmt.Println("Failed to parse timeout duration:", err)
+		os.Exit(1)
 	}
 	// parse compression
 	compressionLevel, err := strconv.Atoi(compressionLevelString)
 	if err != nil {
-		log.Fatalln("Failed to parse compression level:", err)
+		fmt.Println("Failed to parse compression level:", err)
+		os.Exit(1)
 	}
 
 	// generate a temporary directory and remember to close it when were done
@@ -63,7 +71,8 @@ func main() {
 		compressionLevel,
 	)
 	if err != nil {
-		log.Fatalln("Error compressing video:", err)
+		fmt.Println("Error compressing video:", err)
+		os.Exit(1)
 	}
 	if compressionLevel != 0 {
 		uncompressedVidInfo, _ := os.Stat(source)
@@ -76,7 +85,8 @@ func main() {
 	fmt.Println("Connecting to tor...")
 	t, err := tor.Start(context.Background(), &tor.StartConf{DataDir: rootDir})
 	if err != nil {
-		log.Fatalln("Error starting tor:", err)
+		fmt.Println("Error starting tor:", err)
+		os.Exit(1)
 	}
 	defer t.Close() // remember to stop tor
 
@@ -91,7 +101,8 @@ func main() {
 		Version3:    true,
 	})
 	if err != nil {
-		log.Fatalln("Error creating onion service:", err)
+		fmt.Println("Error creating onion service:", err)
+		os.Exit(1)
 	}
 	defer onion.Close() // remember to stop onion
 

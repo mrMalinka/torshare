@@ -38,7 +38,7 @@ func main() {
 		fmt.Printf("File '%v' does not exist.\n", source)
 		os.Exit(1)
 	}
-	if filepath.Ext(source) != "mp4" {
+	if filepath.Ext(source) != ".mp4" {
 		fmt.Println("File is not an mp4.")
 		os.Exit(1)
 	}

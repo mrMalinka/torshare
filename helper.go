@@ -17,10 +17,13 @@ func wait(timeout time.Duration) bool {
 	inputReader := bufio.NewReader(os.Stdin)
 
 	go func() {
-		fmt.Printf("Enter 'stop' to stop> ")
-		text, _ := inputReader.ReadString('\n')
-		if strings.TrimSpace(strings.ToLower(text)) == "stop" {
-			yesChan <- true
+		for {
+			fmt.Printf("Enter 'stop' to stop> ")
+			text, _ := inputReader.ReadString('\n')
+			if strings.TrimSpace(strings.ToLower(text)) == "stop" {
+				yesChan <- true
+				break
+			}
 		}
 	}()
 

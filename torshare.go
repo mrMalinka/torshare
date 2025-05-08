@@ -17,13 +17,20 @@ import (
 
 const tempFilename = "vid-compressed.mp4"
 
+func printUsageAndExit() {
+	fmt.Println("Usage:\ntorshare [filename] [timeout] [compression (0-10)]")
+	os.Exit(1)
+}
+
 func main() {
+	if len(os.Args) < 4 {
+		printUsageAndExit()
+	}
 	source := os.Args[1]
 	timeoutString := os.Args[2]
 	compressionLevelString := os.Args[3]
 	if source == "" || timeoutString == "" || compressionLevelString == "" {
-		fmt.Println("Usage:\ntorshare [filename] [timeout] [compression (0-10)]")
-		os.Exit(1)
+		printUsageAndExit()
 	}
 
 	// check if user has tor installed
